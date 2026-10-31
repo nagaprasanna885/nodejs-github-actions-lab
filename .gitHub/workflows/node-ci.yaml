@@ -33,4 +33,9 @@ on:
                   with:
                     name: node-build-artifact
                     path: dist/
+                    - name: Verify Secret Access
+  env:
+    CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  run: |
+    echo "Service Principal Client ID length is: ${#CLIENT_ID}"
        
