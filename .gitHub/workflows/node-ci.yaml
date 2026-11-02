@@ -1,36 +1,30 @@
-name: Node.JS CI Pipeline
+name: Node CI
+
 on:
   push:
     branches:
       - main
-      pull_request:
 
-      workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-      permissions:
-        contents: read
+    steps:
+      - uses: actions/checkout@v4
 
-      jobs:
-        build:
-          runs-on: ubuntu-latest
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-          steps:
-            - name: checkout source code
-              uses: action/checkout@v4
-               -name: steup node.js
-               uses: action/setup-node@v4
-               with:
-                  node-version:24
+      - name: Install Dependencies
+        run: npm install
 
-                  -name: Install dependencies
-                  run:npm ci
-                  -name: run tests
-                  run:npm test
-                  -name: build application
-                  run: npm run build
-                  -name: upload build artifact
-                  uses: actions/upload-artifact@v4
-                  with:
-                    name: node-build-artifact
-                    path: dist/
-       
+      - name: Run Tests
+        run: npm test
+
+      - name: Verify Secret Access
+        env:
+          CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        run: |
+          echo "Service Principal Client ID length is: ${#CLIENT_ID}"
